@@ -593,11 +593,12 @@ process_num = 5
 test_mode = True
 sentence_len = 200
 
+print  tf.__version__
+
 # 1.对free text文本进行分词处理，得到词和label的index
 # dump file : vocab_lable.pik (vocab_word2index, label2index)
 # vocab_word2index, label2index=create_or_load_vocabulary(data_path,bert_raw_data,vocab_size,test_mode=False)
 # print(";vocab_word2index:",len(vocab_word2index),";label2index:",label2index)
-
 
 # 2. 得到每个文本的index数组, label one hot的表示
 # dump file : train_vaild_test.h5 (train ,valid,test)
@@ -607,6 +608,6 @@ sentence_len = 200
 # print("train.shape:",train[0].shape,train[1].shape,";valid.shape:",valid[0].shape,valid[1].shape,";test.shape:",test[0].shape,test[1].shape)
 
 # 3.准备词向量
-create_raw_data(data_path, bert_raw_data) # train valid test 数据合并生成所有free文本，用于训练词向量
+# create_raw_data(data_path, bert_raw_data) # train valid test 数据合并生成所有free文本，用于训练词向量
 
-# 4.
+# 4. tain language model
