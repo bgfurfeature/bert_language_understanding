@@ -75,6 +75,7 @@ class BertModel:
         else:  # fine tuning
             self.train_op = self.train()
 
+    # pre-train
     def inference_lm(self):
         """
         this is for pre-trained language model.
@@ -196,7 +197,7 @@ class BertModel:
             self.segment_embeddings_lm = tf.get_variable("segment_embeddings_lm", [self.d_model],initializer=tf.constant_initializer(1.0))  # a learned sequence embedding
             self.position_embeddings_lm = tf.get_variable("position_embeddings_lm", [self.sequence_length_lm, self.d_model],initializer=tf.constant_initializer(1.0))  # sequence_length,1]
 
-            #self.segment_embeddings = tf.get_variable("segment_embeddings", [self.d_model],initializer=tf.constant_initializer(1.0))  # a learned sequence embedding
+            # self.segment_embeddings = tf.get_variable("segment_embeddings", [self.d_model],initializer=tf.constant_initializer(1.0))  # a learned sequence embedding
             self.position_embeddings = tf.get_variable("position_embeddings", [self.sequence_length,self.d_model],initializer=tf.constant_initializer(1.0))  # [sequence_length,self.d_model]
 
 

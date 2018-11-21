@@ -593,8 +593,6 @@ process_num = 5
 test_mode = True
 sentence_len = 200
 
-print  tf.__version__
-
 # 1.对free text文本进行分词处理，得到词和label的index
 # dump file : vocab_lable.pik (vocab_word2index, label2index)
 # vocab_word2index, label2index=create_or_load_vocabulary(data_path,bert_raw_data,vocab_size,test_mode=False)

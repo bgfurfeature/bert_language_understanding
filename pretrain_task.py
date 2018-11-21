@@ -73,6 +73,7 @@ def mask_language_model(source_file, target_file, index2word, max_allow_sentence
             sentence = sentence.lower().strip()
             string_list = [x for x in jieba.lcut(sentence.strip()) if x and x not in ["\"", "：", "、", "，", "）", "（"]]
             sentence_length = len(string_list)
+            # 句子最大max_allow_length, 不足的丢弃
             if sentence_length > max_allow_sentence_length:  # string list is longer then sentence_length
                 string_list = string_list[0:max_allow_sentence_length]
             else:  # ignore short sentence currently, temporary
@@ -81,7 +82,7 @@ def mask_language_model(source_file, target_file, index2word, max_allow_sentence
             index = random.sample(list_indices, 1)
             index = index[0]
             mask_word = string_list[index]
-            ########### 3.THREE DIFFERENT TYPES when generate sentence.#################################################
+            # 3.THREE DIFFERENT TYPES when generate sentence.
             random_number = random.random()
             if random_number <= eighty_percentage:  # 80% of the time: Replace the word with the [MASK] token, e.g., my dog is hairy → my dog is [MASK]
                 string_list[index] = _MASK
@@ -90,7 +91,7 @@ def mask_language_model(source_file, target_file, index2word, max_allow_sentence
                 string_list[index] = index2word.get(random_word, _UNK)
             else:  # 10% of the time: Keep the word un- changed, e.g., my dog is hairy → my dog is hairy.
                 string_list[index] = mask_word
-            ###########THREE DIFFERENT TYPES when generate sentence.####################################################
+            # THREE DIFFERENT TYPES when generate sentence.
             # 4. process sentence/word as indices/index
             string_list_indexed = [word2index.get(x, UNK_ID) for x in string_list]
             mask_word_indexed = word2index.get(mask_word, UNK_ID)
@@ -231,7 +232,7 @@ def mask_language_model_multi_processing(source_file, target_file, index2word, m
     # 4. save to file system as cache file if not exist.
     if not os.path.exists(cache_file):
         with open(cache_file, 'ab') as data_f:
-            print("going to save cache file of masked langauge model.")
+            print("going to save cache file of masked language model.")
             pickle.dump((train, valid, test), data_f)
 
     return train, valid, test
@@ -262,7 +263,7 @@ def process_one_chunk_lm(lines, max_allow_sentence_length, index2word, sub_targe
             index = random.sample(list_indices, 1)
             index = index[0]
             mask_word = string_list[index]
-            ########### 3.THREE DIFFERENT TYPES when generate sentence.#################################################################
+            # 3.THREE DIFFERENT TYPES when generate sentence.#################################################################
             random_number = random.random()
             if random_number <= eighty_percentage:  # 80% of the time: Replace the word with the [MASK] token, e.g., my dog is hairy → my dog is [MASK]
                 string_list[index] = _MASK
@@ -271,7 +272,7 @@ def process_one_chunk_lm(lines, max_allow_sentence_length, index2word, sub_targe
                 string_list[index] = index2word.get(random_word, _UNK)
             else:  # 10% of the time: Keep the word un- changed, e.g., my dog is hairy → my dog is hairy.
                 string_list[index] = mask_word
-            # ##########THREE DIFFERENT TYPES when generate
+            # THREE DIFFERENT TYPES when generate
             # sentence.##################################################################### process sentence/word as
             #  indices/index
             string_list_indexed = [word2index.get(x, UNK_ID) for x in string_list]

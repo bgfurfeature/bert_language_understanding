@@ -12,7 +12,7 @@ import numpy as np
 from model.encoder import Encoder
 from model.config import Config
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 class BertCNNModel:
     def __init__(self,config):
@@ -42,6 +42,7 @@ class BertCNNModel:
 
         #################
         self.filter_sizes = [2, 3, 4, 5]
+        # 词向量大小和d_model 一致
         self.embed_size = self.d_model
         self.num_filters = 128
         self.is_training_flag = self.is_training
@@ -57,7 +58,7 @@ class BertCNNModel:
         self.y_mask_lm=tf.placeholder(tf.int32, [self.batch_size],name="y_mask_lm")
         self.p_mask_lm=tf.placeholder(tf.int32, [self.batch_size],name="p_mask_lm")
 
-        self.learning_rate_decay_half_op = tf.assign(self.learning_rate, self.learning_rate *config.decay_rate)
+        self.learning_rate_decay_half_op = tf.assign(self.learning_rate, self.learning_rate * config.decay_rate)
         self.initializer=tf.random_normal_initializer(stddev=0.1)
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
         self.global_step = tf.Variable(0, trainable=False, name="Global_Step")
