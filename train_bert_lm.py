@@ -100,6 +100,8 @@ def main(_):
             if FLAGS.use_pretrained_embedding:
                 vocabulary_index2word={index:word for word,index in vocab_word2index.items()}
                 assign_pretrained_word_embedding(sess, vocabulary_index2word, vocab_size,FLAGS.word2vec_model_path,model.embedding,config.d_model) # assign pretrained word embeddings
+
+        # default: 0
         curr_epoch=sess.run(model.epoch_step)
 
         # 2.feed data & training
@@ -107,22 +109,24 @@ def main(_):
         print("number_of_training_data:",number_of_training_data)
         batch_size=FLAGS.batch_size
         iteration=0
+        # worst score
         score_best=-100
         for epoch in range(curr_epoch,FLAGS.num_epochs):
             loss_total_lm, counter =  0.0, 0
             for start, end in zip(range(0, number_of_training_data, batch_size),range(batch_size, number_of_training_data, batch_size)):
                 iteration=iteration+1
                 if epoch==0 and counter==0:
-                    print("trainX[start:end]:",train_X[start:end],"train_X.shape:",train_X.shape)
+                    # print("trainX[start:end]:",train_X[start:end],"train_X.shape:",train_X.shape)
+                    print ("first epoch and counter equal 0 ")
                 feed_dict = {model.x_mask_lm: train_X[start:end],model.y_mask_lm: train_y[start:end],model.p_mask_lm:train_p[start:end],
                              model.dropout_keep_prob: FLAGS.dropout_keep_prob}
                 current_loss_lm,lr,l2_loss,_=sess.run([model.loss_val_lm,model.learning_rate,model.l2_loss_lm,model.train_op_lm],feed_dict)
                 loss_total_lm,counter=loss_total_lm+current_loss_lm,counter+1
                 if counter %30==0:
-                    print("%d\t%d\tLearning rate:%.5f\tLoss_lm:%.3f\tCurrent_loss_lm:%.3f\tL2_loss:%.3f\t"%(epoch,counter,lr,float(loss_total_lm)/float(counter),current_loss_lm,l2_loss))
-                if start!=0 and start%(4000*FLAGS.batch_size)==0: # epoch!=0
+                    print("epoch:%d\t,counter:%d\tLearning rate:%.5f\tLoss_lm:%.3f\tCurrent_loss_lm:%.3f\tL2_loss:%.3f\t"%(epoch,counter,lr,float(loss_total_lm)/float(counter),current_loss_lm,l2_loss))
+                if start!=0 and start%(10*FLAGS.batch_size)==0: # epoch!=0
                     loss_valid, acc_valid= do_eval(sess, model,valid,batch_size)
-                    print("%d\tValid.Epoch %d ValidLoss:%.3f\tAcc_valid:%.3f\t" % (counter,epoch, loss_valid, acc_valid*100))
+                    print("counter:%d\tValid.Epoch %d ValidLoss:%.3f\tAcc_valid:%.3f\t" % (counter,epoch, loss_valid, acc_valid*100))
                     # save model to checkpoint
                     if acc_valid>score_best:
                         save_path = FLAGS.ckpt_dir + "model.ckpt"
@@ -131,7 +135,9 @@ def main(_):
                         score_best=acc_valid
             sess.run(model.epoch_increment)
 
+
 validation_size=100*FLAGS.batch_size
+
 def do_eval(sess,model,valid,batch_size):
     """
     do evaluation using validation set, and report loss, and f1 score.
@@ -146,9 +152,11 @@ def do_eval(sess,model,valid,batch_size):
     if number_examples>10000:
         number_examples=validation_size
     print("do_eval.valid.number_examples:",number_examples)
-    if number_examples>validation_size: valid_X,valid_y,valid_p=valid_X[0:validation_size],valid_y[0:validation_size],valid_p[0:validation_size]
+    if number_examples>validation_size:
+        valid_X,valid_y,valid_p=valid_X[0:validation_size],valid_y[0:validation_size],valid_p[0:validation_size]
     eval_loss,eval_counter,eval_acc=0.0,0,0.0
     for start,end in zip(range(0,number_examples,batch_size),range(batch_size,number_examples,batch_size)):
+        # 训练的时候dropout, eval的时候不做dropout
         feed_dict = {model.x_mask_lm: valid_X[start:end],model.y_mask_lm: valid_y[start:end],model.p_mask_lm:valid_p[start:end],
                      model.dropout_keep_prob: 1.0} # FLAGS.dropout_keep_prob
         curr_eval_loss, logits_lm, accuracy_lm= sess.run([model.loss_val_lm,model.logits_lm,model.accuracy_lm],feed_dict) # logits：[batch_size,label_size]

@@ -225,7 +225,7 @@ def train():
             input_x[input_x >= 0] = 1
             input_x[input_x < 0] = 0
             input_y = generate_label(input_x,threshold)
-            p_mask_lm=[i for i in range(batch_size)]
+            p_mask_lm=[i for i in range(config.batch_size)]
             # 3.run session to train the model, print some logs.
             loss, _ = sess.run([model.loss_val,  model.train_op],feed_dict={model.x_mask_lm: input_x, model.y_mask_lm: input_y,model.p_mask_lm:p_mask_lm,
                                                                             model.dropout_keep_prob: config.dropout_keep_prob})
