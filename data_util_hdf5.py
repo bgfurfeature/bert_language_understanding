@@ -542,7 +542,7 @@ def load_word2vec(word2vec_model_path, embed_size):
     #    word2vec_dict[word]=vector
     ######################
     word2vec_dict = {}
-    with open(word2vec_model_path, errors='ignore') as f:
+    with open(word2vec_model_path) as f:
         meta = f.readline()
         for line in f.readlines():
             items = line.split(' ')

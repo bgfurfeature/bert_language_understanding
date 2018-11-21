@@ -151,7 +151,7 @@ def do_eval(sess,model,valid,batch_size):
     number_examples=valid_X.shape[0]
     if number_examples>10000:
         number_examples=validation_size
-    print("do_eval.valid.number_examples:",number_examples)
+    print ("do_eval.valid.number_examples: %d " % (number_examples))
     if number_examples>validation_size:
         valid_X,valid_y,valid_p=valid_X[0:validation_size],valid_y[0:validation_size],valid_p[0:validation_size]
     eval_loss,eval_counter,eval_acc=0.0,0,0.0
