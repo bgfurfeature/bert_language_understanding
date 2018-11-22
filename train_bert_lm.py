@@ -51,7 +51,7 @@ tf.app.flags.DEFINE_boolean("is_training",True,"is training.true:tranining,false
 tf.app.flags.DEFINE_boolean("is_fine_tuning",False,"is_finetuning.ture:this is fine-tuning stage")
 tf.app.flags.DEFINE_integer("num_epochs",30,"number of epochs to run.")
 tf.app.flags.DEFINE_integer("validate_every", 1, "Validate every validate_every epochs.")
-tf.app.flags.DEFINE_boolean("use_pretrained_embedding",False,"whether to use embedding or not.")#
+tf.app.flags.DEFINE_boolean("use_pretrained_embedding",False,"whether to use embedding or not.")
 tf.app.flags.DEFINE_string("word2vec_model_path","./data/Tencent_AILab_ChineseEmbedding_100w.txt","word2vec's vocabulary and vectors") # data/sgns.target.word-word.dynwin5.thr10.neg5.dim300.iter5--->data/news_12g_baidubaike_20g_novel_90g_embedding_64.bin--->sgns.merge.char
 tf.app.flags.DEFINE_integer("process_num",35,"number of cpu process")
 
@@ -70,6 +70,7 @@ def main(_):
     # train,valid,test= mask_language_model(
     # FLAGS.mask_lm_source_file,FLAGS.data_path,index2word,max_allow_sentence_length=FLAGS.max_allow_sentence_length,test_mode=FLAGS.test_mode)
     # example data: trainX:[6750, 10], trainY: [6750, ], validX: [375, 10], testX: [375, 10]
+    # 可同等比较 tfrecord 处理训练数据的方法
     train, valid, test = mask_language_model(FLAGS.mask_lm_source_file, FLAGS.data_path, index2word, max_allow_sentence_length=FLAGS.max_allow_sentence_length,test_mode=FLAGS.test_mode, process_num=FLAGS.process_num)
 
     train_X, train_y, train_p = train
@@ -94,6 +95,7 @@ def main(_):
             for i in range(2): # decay learning rate if necessary.
                 print(i,"Going to decay learning rate by half.")
                 sess.run(model.learning_rate_decay_half_op)
+                print  ("learning rate:%d" % (sess.run(model.learning_rate)))
         else:
             print('Initializing Variables')
             sess.run(tf.global_variables_initializer())
@@ -151,7 +153,7 @@ def do_eval(sess,model,valid,batch_size):
     number_examples=valid_X.shape[0]
     if number_examples>10000:
         number_examples=validation_size
-    print ("do_eval.valid.number_examples: %d " % (number_examples))
+    # print ("do_eval.valid.number_examples: %d " % (number_examples))
     if number_examples>validation_size:
         valid_X,valid_y,valid_p=valid_X[0:validation_size],valid_y[0:validation_size],valid_p[0:validation_size]
     eval_loss,eval_counter,eval_acc=0.0,0,0.0

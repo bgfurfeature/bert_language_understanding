@@ -492,8 +492,7 @@ def assign_pretrained_word_embedding(sess, vocabulary_index2word, vocab_size, wo
     """
     print(
         "using pre-trained word emebedding.started.word2vec_model_path:", word2vec_model_path, ";vocab_size:",
-        vocab_size,
-        ";embed_size:", embed_size)
+        vocab_size,";embed_size:", embed_size)
     word2vec_dict = load_word2vec(word2vec_model_path, embed_size)
     word_embedding_2dlist = [[]] * vocab_size  # create an empty word_embedding list.
     word_embedding_2dlist[0] = np.zeros(embed_size)  # assign empty for first word:'PAD'
@@ -521,7 +520,7 @@ def assign_pretrained_word_embedding(sess, vocabulary_index2word, vocab_size, wo
     word_embedding = tf.constant(word_embedding_final, dtype=tf.float32)  # convert to tensor
     t_assign_embedding = tf.assign(embedding_instance, word_embedding)
     sess.run(t_assign_embedding)
-    print("====>>>>word. exists embedding:", count_exist, " ;word not exist embedding:", count_not_exist)
+    print("====>>>> word. exists embedding:", count_exist, " ;word not exist embedding:", count_not_exist)
     print("using pre-trained word emebedding.ended...")
 
 
