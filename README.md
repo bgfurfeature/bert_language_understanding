@@ -1,4 +1,4 @@
-# bert for language understanding
+# Ideas from google's bert for language understanding: Pre-train TextCNN
 
 ## Table of Contents
 
@@ -82,12 +82,36 @@ MIDDLE SIZE DATASET(<a href='https://pan.baidu.com/s/1HUzBXB_-zzqv-abWZ74w2Q'>ca
 
 Model                        | TextCNN(No-pretrain)| TextCNN(Pretrain-Finetuning)| Gain from pre-train 
 ---                          | ---                 | ---                         | -----------     
-F1 Score after 1 epoch       |  0.16               | 0.74                        |  0.58        
-F1 Score after 5 epoch       |  0.58               | 0.83                        | 0.25                           
-Training Loss at beginning   |  327.9              | 81.8                        |  246.1             
-Validation Loss after 1 epoch|  13.3               | 2.1                         |  11.2                 
-Validation Loss after 5 epoch|  7.0                | 1.4                         |  5.6                              
+F1 Score after 1 epoch       |  0.09               | 0.58                        |  0.49        
+F1 Score after 5 epoch       |  0.40               | 0.74                        |  0.35    
+F1 Score after 7 epoch       |  0.44               | 0.75                        |  0.31                         
+F1 Score after 35 epoch      |  0.58               | 0.75                        |  0.27                                                
+Training Loss at beginning   |  284.0              | 84.3                        |  199.7             
+Validation Loss after 1 epoch|  13.3               | 1.9                         |  11.4                 
+Validation Loss after 5 epoch|  6.7                | 1.3                         |  5.4   
+Training time(single gpu)    |  8h                 | 2h                          |  6h
 ----------------------------------------------------------------------------------------------
+Notice: 
+
+  a.fine-tuning stage completed training after just running 7 epoch as max epoch reached to 35. 
+
+     in fact, fine-tuning stage start training from epoch 27 where pre-train stage ended.
+
+  c.f1 Score reported here is on validation set, an average of micro and macro of f1 score. 
+
+  d.f1 score after 35 epoch is reported on test set.
+  
+  e. from 450k raw documents, retrieved 2 million training data for masked language model, 
+  
+     pre-train stage finished within 5 hours in single GPU. 
+
+fine tuning after pre-train:
+
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/pretrain_completed.jpeg"  width="60%" height="60%" />
+
+no pre-train:
+
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/no_pretrain.jpeg"  width="60%" height="60%" />
 
 SMALL SIZE DATASET(private, 100k)
 
@@ -117,14 +141,14 @@ if you want to try BERT with pre-train of masked language model and fine-tuning.
    
    than training from completely new, and f1 score is also higher while new model may start from 0.
    
-   Notice: to help you try new idea first, you can set hypermater test_mode to True. it will only load few data, and start to training quickly.
+   Notice: to help you try new idea first, you can set hyper-paramater test_mode to True. it will only load few data, and start to training quickly.
   
   
-   ##### [basic step] to handle a classification problem with transform: 
+   ##### [basic step] to handle a classification problem with transform(optional): 
     
      python train_transform.py [DONE, but a bug exist prevent it from converge, welcome you to fix, email: brightmart@hotmail.com]
         
-  #### Optional hypermeters
+  #### Optional hyper-parameters
   
   d_model: dimension of model.   [512]
   
@@ -146,6 +170,7 @@ if you want to try BERT with pre-train of masked language model and fine-tuning.
 ##### for pre-train stage 
 each line is document(several sentences) or a sentence. that is free-text you can get easily.
 
+check data/bert_train.txt or bert_train2.txt in the zip file.
 
 ##### for data used on fine-tuning stage:
 
@@ -158,14 +183,22 @@ token1 token2 token3 __label__l1 __label__l5 __label__l3
 
 token1 token2 token3 __label__l2 __label__l4
 
+check data/bert_train.txt or bert_train2.txt in the zip file.
 
 check 'data' folder for sample data. <a href='https://pan.baidu.com/s/1HUzBXB_-zzqv-abWZ74w2Q'>down load a middle size data set here
 
 </a>with 450k 206 classes, each input is a document, average length is around 300, one or multi-label associate with input.
 
+<a href='https://ai.tencent.com/ailab/nlp/embedding.html'>download pre-train word embedding from tencent ailab</a> 
 ## Suggestion for User
 
-1. things can be easy: 1) download dataset(around 200M),2) run step 1 for pre-train, 3) and run step 2 for fine-tuning.
+1. things can be easy: 
+           
+      1) download data set(around 200M, 450k data, with some cache file), unzip it and put it in data/ folder,
+           
+      2) run step 1 for pre-train, 
+           
+      3) and run step 2 for fine-tuning.
 
 2. i finish above three steps, and want to have a better performance, how can i do further. do i need to find a big dataset?
 
@@ -188,9 +221,9 @@ based on multiple layer self-attetion model, then fine tuning by add a classific
 
 As BERT model is based on Transformer, currently we are working on add pretrain task to the model.
 
-<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/aa3.jpeg"  width="60%" height="60%" />
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/aa3.jpeg"  width="60%" height="60%" />
 
-<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/aa4.jpeg"  width="65%" height="65%" />
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/aa4.jpeg"  width="65%" height="65%" />
 
 
 Notice: 
@@ -273,9 +306,9 @@ have to reconstruct those words from context. We call this a "masked LM" but it 
     Input = [CLS] the man heading to the store [SEP] penguin [MASK] are flight ##less birds [SEP]
     Label = NotNext
     
-<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/aa1.jpeg"  width="65%" height="65%" />
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/aa1.jpeg"  width="65%" height="65%" />
 
-<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/aa2.jpeg"  width="65%" height="65%" />
+<img src="https://github.com/brightmart/bert_language_understanding/blob/master/data/img/aa2.jpeg"  width="65%" height="65%" />
 
 
 ## Environment
@@ -392,11 +425,11 @@ it will print loss during training,  and print f1 score for each epoch during va
 
 4. need a data set for sentiment analysis or text classification in english [IMPORTANT,recruit a team member and need a merge request]
 
-5. special handle first token [cls] as input and classification [DONE]
-
-6. position embedding is not shared between with pre-train and fine-tuning yet. since here on pre-train stage length may 
+5. position embedding is not shared between with pre-train and fine-tuning yet. since here on pre-train stage length may 
 
      shorter than fine-tuning stage.
+     
+6. special handle first token [cls] as input and classification [DONE]
 
 7. pre-train with fine_tuning: need load vocabulary of tokens from pre-train stage, but labels from real task. [DONE]
 

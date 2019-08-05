@@ -31,7 +31,7 @@ class BertCNNModel:
         self.decay_steps=config.decay_steps
         self.decay_rate=config.decay_rate
         self.d_k=config.d_k
-        self.d_model=config.d_model
+
         self.h=config.h
         self.d_v=config.d_v
         self.num_layer=config.num_layer
@@ -219,13 +219,10 @@ class BertCNNModel:
                 conv2 = tf.contrib.layers.batch_norm(conv2, is_training=self.is_training_flag, scope='cnn2')
                 print(i, "conv2:", conv2)
                 b2 = tf.get_variable("b2-%s" % filter_size, [self.num_filters])  # ADD 2017-06-09
-                h = tf.nn.relu(tf.nn.bias_add(conv2, b2),
-                               "relu2")  # shape:[batch_size,sequence_length - filter_size + 1,1,num_filters]. tf.nn.bias_add:adds `bias` to `value`
+                h = tf.nn.relu(tf.nn.bias_add(conv2, b2),"relu2")  # shape:[batch_size,sequence_length - filter_size + 1,1,num_filters]. tf.nn.bias_add:adds `bias` to `value`
 
                 # 3. Max-pooling
-                pooling_max = tf.squeeze(
-                    tf.nn.max_pool(h, ksize=[1, (self.total_sequence_length - filter_size * 2 + 2), 1, 1],
-                                   strides=[1, 1, 1, 1], padding='VALID', name="pool"))
+                pooling_max = tf.squeeze(tf.nn.max_pool(h, ksize=[1, (self.total_sequence_length - filter_size * 2 + 2), 1, 1],strides=[1, 1, 1, 1], padding='VALID', name="pool"))
                 # pooling_avg=tf.squeeze(tf.reduce_mean(h,axis=1)) #[batch_size,num_filters]
                 print(i, "pooling:", pooling_max)
                 # pooling=tf.concat([pooling_max,pooling_avg],axis=1) #[batch_size,num_filters*2]
@@ -306,6 +303,7 @@ def train():
     save_path = config.ckpt_dir + "model.ckpt"
     #if not os.path.exists(config.ckpt_dir):
     #    os.makedirs(config.ckpt_dir)
+    batch_size = 8
     with tf.Session(config=gpu_config) as sess:
         sess.run(tf.global_variables_initializer())
         if os.path.exists(config.ckpt_dir): #
