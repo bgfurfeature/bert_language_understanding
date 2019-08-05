@@ -102,7 +102,7 @@ class BertModel:
         p_mask_lm_onehot=tf.one_hot(self.p_mask_lm,self.sequence_length_lm) # [batch_size, sequence_length_lm]
         p_mask_lm_expand=tf.expand_dims(p_mask_lm_onehot,axis=-1) #  # [batch_size, sequence_length_lm,1]
         h_lm_multiply=tf.multiply(h_lm,p_mask_lm_expand)     # [batch_size,sequence_length,d_model]
-        h_lm_representation=tf.reduce_sum(h_lm_multiply,axis=1) # batch_size,d_model].
+        h_lm_representation=tf.reduce_sum(h_lm_multiply,axis=1) # [batch_size,d_model].
 
         # 4. project representation of masked token(s) to vocab size
         with tf.variable_scope("pre_training"):

@@ -501,7 +501,7 @@ def assign_pretrained_word_embedding(sess, vocabulary_index2word, vocab_size, wo
     word_embedding_2dlist[3] = np.zeros(embed_size)  # assign empty for third word:'MASK'
 
     bound = np.sqrt(0.3) / np.sqrt(vocab_size)  # bound for random variables.3.0
-    count_exist = 0;
+    count_exist = 0
     count_not_exist = 0
     for i in range(4, vocab_size):  # loop each word
         word = vocabulary_index2word[i]  # get a word
